@@ -1,0 +1,37 @@
+{
+  "receiver": "ntfy",
+  "status": "firing",
+  "alerts": [
+    {
+      "status": "firing",
+      "labels": {
+        "alertname": "KubePodNotReady",
+        "namespace": "blog",
+        "pod": "blog-6bf4ffc775-th9ft",
+        "prometheus": "monitoring-system/monitoring-system-kube-pro-prometheus",
+        "severity": "warning"
+      },
+      "annotations": {
+        "description": "Pod blog/blog-6bf4ffc775-th9ft has been in a non-ready state for longer than 15 minutes.",
+        "runbook_url": "runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodnotready",
+        "summary": "Pod has been in a non-ready state for more than 15 minutes."
+      },
+      "startsAt": "2024-01-25T01:15:35.211Z",
+      "endsAt": "0001-01-01T00:00:00Z",
+      "fingerprint": "8697bcce9a8fe67a"
+    }
+  ],
+  "groupLabels": {
+    "namespace": "blog"
+  },
+  "commonLabels": {
+    "namespace": "blog",
+    "prometheus": "monitoring-system/monitoring-system-kube-pro-prometheus",
+    "severity": "warning"
+  },
+  "commonAnnotations": {},
+  "externalURL": "monitoring-system-kube-pro-alertmanager.monitoring-system:9093",
+  "version": "4",
+  "groupKey": "{}:{namespace=\"blog\"}",
+  "truncatedAlerts": 0
+}
