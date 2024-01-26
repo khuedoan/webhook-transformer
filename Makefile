@@ -7,7 +7,7 @@ build:
 	nix build
 
 dev:
-	nix run
+	cargo run -- --config examples/basic/config.jsonnet
 
 test:
 	cargo test
