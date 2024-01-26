@@ -1,11 +1,17 @@
 .POSIX:
-.PHONY: default build oci-image
+.PHONY: *
 
 default: build
 
 build:
 	nix build
 
-oci-image:
+dev:
+	nix run
+
+test:
+	cargo test
+
+docker:
 	nix build '.#dockerImage'
 	docker load < ./result

@@ -33,7 +33,7 @@
           rustToolchain
         ];
         buildInputs = with pkgs; [
-          yggdrasil
+          # TODO?
         ];
         commonArgs = {
           inherit src buildInputs nativeBuildInputs;
@@ -47,16 +47,6 @@
           tag = "latest";
           copyToRoot = [
             bin
-            pkgs.yggdrasil
-
-            # TODO remove, just for debug
-            pkgs.bash
-            pkgs.coreutils
-            pkgs.curl
-            pkgs.iproute2
-            pkgs.iptables
-            pkgs.nftables
-            pkgs.sysctl
           ];
           config = {
             Cmd = [ "${bin}/bin/webhook-transformer" ];
