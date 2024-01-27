@@ -50,7 +50,7 @@
             bin
           ];
           config = {
-            Cmd = [ "${bin}/bin/webhook-transformer" ];
+            entrypoint = [ "${bin}/bin/webhook-transformer" ];
           };
         };
       in
