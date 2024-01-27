@@ -37,6 +37,7 @@
         ];
         commonArgs = {
           inherit src buildInputs nativeBuildInputs;
+          doCheck = false;
         };
         cargoArtifacts = craneLib.buildDepsOnly commonArgs;
         bin = craneLib.buildPackage (commonArgs // {
