@@ -1,5 +1,8 @@
-use axum::{routing::post, Json, Router};
+use axum::{extract, routing::post, Json, Router};
 use clap::Parser;
+use jrsonnet_evaluator::{State, Thunk, Val};
+use jrsonnet_stdlib::StateExt;
+use serde_json::json;
 use std::fs;
 
 #[derive(Parser, Debug)]
@@ -37,8 +40,21 @@ fn app(config: String) -> Router {
     )
 }
 
-fn transform(jsonnet_config: String, payload: Json<serde_json::Value>) -> Json<serde_json::Value> {
-    payload
+fn transform(
+    jsonnet_config: String,
+    extract::Json(payload): extract::Json<serde_json::Value>,
+) -> Json<serde_json::Value> {
+    let state = State::default();
+    state.with_stdlib();
+
+    state.add_global(
+        "body".into(),
+        Thunk::evaluated(Val::from_serde(payload).unwrap()),
+    );
+
+    json!(state.evaluate_snippet("config.jsonnet", jsonnet_config)
+        .unwrap())
+        .into()
 }
 
 #[cfg(test)]
@@ -53,7 +69,7 @@ mod tests {
     use tower::util::ServiceExt;
 
     async fn run_example(name: &str) {
-        let app = crate::app(format!("examples/{name}/input.json"));
+        let app = crate::app(format!("examples/{name}/config.jsonnet"));
 
         let input = fs::read_to_string(format!("examples/{name}/input.json"))
             .await
@@ -92,5 +108,10 @@ mod tests {
     #[tokio::test]
     async fn basic() {
         run_example("basic").await;
+    }
+
+    #[tokio::test]
+    async fn alertmanager_to_ntfy() {
+        run_example("alertmanager-to-ntfy").await;
     }
 }
