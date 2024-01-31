@@ -1,9 +1,28 @@
 # Webhook Transformer
 
+> [!WARNING]
+> Alpha software
+
+A small service to transform incoming HTTP POST requests using Jsonnet and
+forwards them to the configured destination.
+
 ## Usage
 
-This tool uses Jsonnet to transform your webhook payload,
-please see the `examples/` directory for example configurations.
+There's a pre-compiled Docker image that you can use:
+
+```sh
+docker run \
+    -p 8080 \
+    -v /path/to/config.jsonnet:/config.jsonnet \
+    ghcr.io/khuedoan/webhook-transformer:v0.0.1 --config /config.jsonnet
+```
+
+I personally run it as a Kubernetes sidecar to transform Alertmanager webhooks
+to ntfy format, but you can use it to transform anything you like.
+There are some examples in the `examples/` directory:
+
+- [Basic](./examples/basic/config.jsonnet)
+- [Alertmanager to ntfy](./examples/alertmanager-to-ntfy/config.jsonnet)
 
 ## Development
 
