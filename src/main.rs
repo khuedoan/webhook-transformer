@@ -4,10 +4,10 @@ use axum::{
     Router,
 };
 use clap::Parser;
+use reqwest;
 use serde_json::Value;
 use std::{fs, sync::Arc};
 use webhook_transformer;
-use reqwest;
 
 #[derive(Parser, Debug)]
 struct Args {
@@ -64,9 +64,9 @@ async fn transform_handler(
     Json(payload): Json<Value>,
 ) -> Json<Value> {
     let transformed_payload = webhook_transformer::transform(state.jsonnet_config.clone(), payload);
-        // Send POST request with the transformed payload to upstream_host
     let client = reqwest::Client::new();
-    let _res = client.post(&state.upstream_host)
+    let _res = client
+        .post(&state.upstream_host)
         .json(&transformed_payload)
         .send()
         .await
