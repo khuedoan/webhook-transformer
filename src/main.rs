@@ -41,9 +41,14 @@ async fn main() {
 
     let app = Router::new()
         .route("/", post(transform_handler))
+        .route("/healthz", get(healthcheck_handler))
         .with_state(shared_state);
 
     axum::serve(listener, app).await.unwrap();
+}
+
+async fn healthcheck_handler() -> &'static str {
+    "ok"
 }
 
 async fn transform_handler(
