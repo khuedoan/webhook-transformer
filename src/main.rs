@@ -7,6 +7,7 @@ use clap::Parser;
 use serde_json::Value;
 use std::{fs, sync::Arc};
 use webhook_transformer;
+use reqwest;
 
 #[derive(Parser, Debug)]
 struct Args {
@@ -17,11 +18,15 @@ struct Args {
     port: String,
 
     #[arg(long)]
+    upstream_host: String,
+
+    #[arg(long)]
     config: String,
 }
 
 struct AppState {
     jsonnet_config: String,
+    upstream_host: String,
 }
 
 #[tokio::main]
@@ -37,7 +42,10 @@ async fn main() {
     tracing::info!("listening on {}", listener.local_addr().unwrap());
 
     let jsonnet_config = fs::read_to_string(args.config).expect("failed to read config file");
-    let shared_state = Arc::new(AppState { jsonnet_config });
+    let shared_state = Arc::new(AppState {
+        jsonnet_config,
+        upstream_host: args.upstream_host,
+    });
 
     let app = Router::new()
         .route("/", post(transform_handler))
@@ -55,5 +63,14 @@ async fn transform_handler(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<Value>,
 ) -> Json<Value> {
-    webhook_transformer::transform(state.jsonnet_config.clone(), payload).into()
+    let transformed_payload = webhook_transformer::transform(state.jsonnet_config.clone(), payload);
+        // Send POST request with the transformed payload to upstream_host
+    let client = reqwest::Client::new();
+    let _res = client.post(&state.upstream_host)
+        .json(&transformed_payload)
+        .send()
+        .await
+        .expect("failed to forward request to upstream");
+
+    transformed_payload.into()
 }

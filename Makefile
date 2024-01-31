@@ -7,7 +7,9 @@ build:
 	nix build
 
 dev:
-	cargo run -- --config examples/basic/config.jsonnet
+	cargo run -- \
+		--upstream-host https://ntfy.sh \
+		--config examples/alertmanager-to-ntfy/config.jsonnet
 
 test:
 	cargo test
