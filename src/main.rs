@@ -4,10 +4,8 @@ use axum::{
     Router,
 };
 use clap::Parser;
-use reqwest;
 use serde_json::Value;
-use std::{fs, sync::Arc};
-use webhook_transformer;
+use std::{collections::HashMap, env, fs, sync::Arc};
 
 #[derive(Parser, Debug)]
 struct Args {
@@ -22,11 +20,15 @@ struct Args {
 
     #[arg(long)]
     config: String,
+
+    #[arg(long)]
+    env: Vec<String>,
 }
 
 struct AppState {
     jsonnet_config: String,
     upstream_host: String,
+    env: HashMap<String, String>,
 }
 
 #[tokio::main]
@@ -42,8 +44,19 @@ async fn main() {
     tracing::info!("listening on {}", listener.local_addr().unwrap());
 
     let jsonnet_config = fs::read_to_string(args.config).expect("failed to read config file");
+    // TODO for each env var, reach it and put into App state
     let shared_state = Arc::new(AppState {
         jsonnet_config,
+        env: args
+            .env
+            .iter()
+            .map(|env| {
+                (
+                    env.clone(),
+                    env::var(env).expect("failed to read environment variable"),
+                )
+            })
+            .collect(),
         upstream_host: args.upstream_host,
     });
 
@@ -63,7 +76,8 @@ async fn transform_handler(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<Value>,
 ) -> Json<Value> {
-    let transformed_payload = webhook_transformer::transform(state.jsonnet_config.clone(), payload);
+    let transformed_payload =
+        webhook_transformer::transform(state.jsonnet_config.clone(), state.env.clone(), payload);
     let client = reqwest::Client::new();
     let _res = client
         .post(&state.upstream_host)

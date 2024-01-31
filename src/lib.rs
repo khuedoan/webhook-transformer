@@ -1,14 +1,23 @@
 use jrsonnet_evaluator::{State, Thunk, Val};
 use jrsonnet_stdlib::StateExt;
 use serde_json::{json, Value};
+use std::collections::HashMap;
 
-pub fn transform(jsonnet_config: String, payload: Value) -> Value {
+pub fn transform(jsonnet_config: String, env: HashMap<String, String>, payload: Value) -> Value {
     let state = State::default();
 
     state.with_stdlib();
     state.add_global(
         "body".into(),
-        Thunk::evaluated(Val::from_serde(payload).expect("failed to convert body to jsonnet")),
+        Thunk::evaluated(
+            Val::from_serde(payload.clone()).expect("failed to convert body to jsonnet"),
+        ),
+    );
+    state.add_global(
+        "env".into(),
+        Thunk::evaluated(
+            Val::from_serde(json!(env)).expect("failed to convert env var to jsonnet"),
+        ),
     );
 
     json!(state
@@ -19,7 +28,7 @@ pub fn transform(jsonnet_config: String, payload: Value) -> Value {
 #[cfg(test)]
 mod tests {
     use serde_json::{from_str, Value};
-    use std::fs;
+    use std::{collections::HashMap, fs};
 
     fn run_example(name: &str) {
         let config: String = fs::read_to_string(format!("examples/{name}/config.jsonnet"))
@@ -37,7 +46,9 @@ mod tests {
         )
         .expect("failed parse output to JSON");
 
-        assert_eq!(crate::transform(config, input), output);
+        let env = HashMap::from([("NTFY_TOPIC".to_string(), "webhook-transformer".to_string())]);
+
+        assert_eq!(crate::transform(config, env, input), output);
     }
 
     #[test]

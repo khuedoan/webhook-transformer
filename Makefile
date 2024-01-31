@@ -7,8 +7,9 @@ build:
 	nix build
 
 dev:
-	cargo run -- \
+	NTFY_TOPIC="webhook-transformer" cargo run -- \
 		--upstream-host https://ntfy.sh \
+		--env NTFY_TOPIC \
 		--config examples/alertmanager-to-ntfy/config.jsonnet
 
 test:
