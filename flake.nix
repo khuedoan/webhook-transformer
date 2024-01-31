@@ -44,7 +44,7 @@
           inherit cargoArtifacts;
         });
         dockerImage = pkgs.dockerTools.buildImage {
-          name = "docker.io/khuedoan/webhook-transformer";
+          name = "webhook-transformer";
           tag = "latest";
           copyToRoot = [
             bin
