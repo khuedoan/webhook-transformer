@@ -44,7 +44,6 @@ async fn main() {
     tracing::info!("listening on {}", listener.local_addr().unwrap());
 
     let jsonnet_config = fs::read_to_string(args.config).expect("failed to read config file");
-    // TODO for each env var, reach it and put into App state
     let shared_state = Arc::new(AppState {
         jsonnet_config,
         env: args

@@ -3,8 +3,10 @@
 > [!WARNING]
 > Alpha software
 
-A small service to transform incoming HTTP POST requests using Jsonnet and
-forwards them to the configured destination.
+A small application that listens for incoming HTTP POST requests, transforms the
+payload using a provided Jsonnet configuration, and then forwards the transformed
+payload to an upstream host. This is useful as an adapter to integrate applications
+that don't support each other's webhook formats.
 
 ## Usage
 
@@ -16,6 +18,13 @@ docker run \
     -v /path/to/config.jsonnet:/config.jsonnet \
     ghcr.io/khuedoan/webhook-transformer:v0.0.1 --config /config.jsonnet
 ```
+
+The transformer automatically injects some global variables:
+
+| Name   | Type     | Description                                             |
+| ------ | -------- | ------------------------------------------------------- |
+| `body` | `object` | The JSON payload from the webhook                       |
+| `env`  | `object` | Key-value pairs of the configured environment variables |
 
 I personally run it as a Kubernetes sidecar to transform Alertmanager webhooks
 to ntfy format, but you can use it to transform anything you like.
@@ -49,7 +58,7 @@ curl \
     http://localhost:8080
 ```
 
-After making your changes, run test suite with:
+After making your changes, run the test suite:
 
 ```sh
 make test

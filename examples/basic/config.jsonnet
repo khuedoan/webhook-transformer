@@ -3,6 +3,6 @@
 */
 
 {
-  "title": "Greeting",
-  "message": "Hello, " + body.name + "!"
+  title: 'Greeting',
+  message: 'Hello, ' + body.name + '!',
 }
