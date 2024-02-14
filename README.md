@@ -21,10 +21,10 @@ docker run \
 
 The transformer automatically injects some global variables:
 
-| Name   | Type     | Description                                             |
-| ------ | -------- | ------------------------------------------------------- |
-| `body` | `object` | The JSON payload from the webhook                       |
-| `env`  | `object` | Key-value pairs of the configured environment variables |
+| Name   | Type     | Description                              |
+| ------ | -------- | -----------------------------------------|
+| `body` | `object` | The JSON payload from the webhook        |
+| `env`  | `object` | Key-value pairs of environment variables |
 
 I personally run it as a Kubernetes sidecar to transform Alertmanager webhooks
 to ntfy format, but you can use it to transform anything you like.

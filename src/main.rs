@@ -20,9 +20,6 @@ struct Args {
 
     #[arg(long)]
     config: String,
-
-    #[arg(long)]
-    env: Vec<String>,
 }
 
 struct AppState {
@@ -46,16 +43,7 @@ async fn main() {
     let jsonnet_config = fs::read_to_string(args.config).expect("failed to read config file");
     let shared_state = Arc::new(AppState {
         jsonnet_config,
-        env: args
-            .env
-            .iter()
-            .map(|env| {
-                (
-                    env.clone(),
-                    env::var(env).expect("failed to read environment variable"),
-                )
-            })
-            .collect(),
+        env: env::vars().collect(),
         upstream_host: args.upstream_host,
     });
 
