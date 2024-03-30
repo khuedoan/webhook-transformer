@@ -1,8 +1,16 @@
 {
   "topic": "webhook-transformer",
-  "title": "KubePodNotReady",
+  "title": "[FIRING] KubePodNotReady",
   "message": "Pod blog/blog-6bf4ffc775-th9ft has been in a non-ready state for longer than 15 minutes.",
-  "tags": [],
+  "tags": [
+    "warning"
+  ],
   "priority": 3,
-  "actions": []
+  "actions": [
+    {
+      "action": "view",
+      "label": "Open runbook",
+      "url": "https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodnotready"
+    }
+  ]
 }
