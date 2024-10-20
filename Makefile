@@ -17,3 +17,8 @@ test:
 docker:
 	nix build '.#dockerImage'
 	docker load < ./result
+
+ci:
+	mkdir -p "${CACHE_DIR}/target"
+	ln -s "${CACHE_DIR}/target" "target"
+	make test
